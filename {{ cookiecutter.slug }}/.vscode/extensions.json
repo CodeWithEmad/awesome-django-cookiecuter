@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-python.black-formatter",
+        "batisteo.vscode-django",
+        "mikestead.dotenv",
+        "ms-python.isort",
+        "magicstack.magicpython",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "njpwerner.autodocstring"
+    ]
+}

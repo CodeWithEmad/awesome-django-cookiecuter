@@ -1,0 +1,22 @@
+{
+    "name": "My Project",
+    "slug": "{{ cookiecutter.name | slugify }}",
+    "description": "A short description of the project",
+    "repository": "https://github.com/my_username/{{ cookiecutter.slug }}",
+    "author": "John Doe",
+    "author_email": "john.doe@example.com",
+    "version": "0.1.0",
+    "init_git": "y",
+    "license": ["AGPLv3", "Apache 2.0", "BSDv3", "MIT", "Not open source"],
+    "__prompts__": {
+        "name": "Project Name",
+        "slug": "Slug",
+        "description": "Project Description",
+        "repository": "Repository URL",
+        "author": "Author Name",
+        "author_email": "Author Email Address",
+        "version": "Version",
+        "license": "Package license",
+        "init_git": "Initialize a git repository (y/n)"
+    }
+}

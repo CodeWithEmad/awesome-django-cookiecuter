@@ -1,0 +1,17 @@
+boto3
+celery
+Django < 5
+django-celery-beat
+django-celery-results
+django-cors-headers
+django-environ
+django-filter
+django-redis
+django-storages
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+flower
+ipython
+pillow
+psycopg2-binary

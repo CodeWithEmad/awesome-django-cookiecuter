@@ -1,0 +1,5 @@
+-r base.txt
+
+mkdocs
+mkdocs-material
+mkdocstrings[python]

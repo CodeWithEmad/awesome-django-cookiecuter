@@ -1,0 +1,18 @@
+-r base.txt
+
+black
+coverage
+django-debug-toolbar
+debugpy
+factory-boy
+Faker
+flake8
+flake8-isort
+isort
+mypy
+pip-tools
+pytest
+pytest-celery
+pytest-cov
+pytest-django
+pytest-sugar

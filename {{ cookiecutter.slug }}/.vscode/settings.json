@@ -1,0 +1,26 @@
+{
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        88
+    ],
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "autoDocstring.docstringFormat": "google",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
+    },
+    "python.autoComplete.extraPaths": [
+        "./backend"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "./backend"
+    ]
+}

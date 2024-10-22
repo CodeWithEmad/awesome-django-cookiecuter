@@ -1,0 +1,85 @@
+services:
+  redis:
+    image: "redis:7.4.0"
+    working_dir: /redis/data
+    volumes:
+      - redis-data:/redis/data
+      - ./configs/redis.conf:/redis/configs/redis.conf:ro
+    command: redis-server /redis/configs/redis.conf
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+ 
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: {{ cookiecutter.slug }}-backend:prod
+    ports:
+      - "8000:8000"
+    command: sh -c "/scripts/manage.sh && uwsgi --ini /configs/uwsgi.ini"
+    env_file:
+      - backend/.env
+    volumes:
+      - ./backend:/app
+      - static:/app/static:rw
+      - media:/app/media:rw
+    depends_on:
+      - redis
+      - db
+    restart: on-failure
+  
+  beat:
+    image: {{ cookiecutter.slug }}-backend:prod
+    command: celery --app=config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+  
+  worker:
+    image: {{ cookiecutter.slug }}-backend:prod
+    command: sh -c "python3 /usr/local/bin/celery --app=config worker -l info -E --without-gossip --without-mingle --without-heartbeat"
+    environment:
+      DEBUG: "true"
+      C_FORCE_ROOT: "1" # run celery tasks as root
+    volumes:
+      - ./backend:/app:rw
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+  
+  dashboard:
+    image: {{ cookiecutter.slug }}-backend:prod
+    command: celery --app=config flower --port=5555 --info
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+
+volumes:
+  redis-data:
+  postgres_data:
+  static:
+  media:

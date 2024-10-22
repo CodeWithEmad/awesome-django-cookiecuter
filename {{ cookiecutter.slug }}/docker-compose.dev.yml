@@ -1,0 +1,113 @@
+services:
+  redis:
+    image: "redis:7.4.0"
+    working_dir: /redis/data
+    volumes:
+      - redis-data:/redis/data
+      - ./configs/redis.conf:/redis/configs/redis.conf:ro
+    command: redis-server /redis/configs/redis.conf
+    ports:
+      - 6379:6379
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB={{ cookiecutter.slug }}
+    ports:
+      - "5432:5432"
+  mailhog:
+    image: mailhog/mailhog:latest
+    expose:
+      - 1025
+      - 8025
+    ports:
+      - 1025:1025
+      - 8025:8025
+  pgadmin:
+    image: dpage/pgadmin4:8.11.0
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - "5050:80"
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        BUILD_ENVIRONMENT: dev
+    image: {{ cookiecutter.slug }}-backend:dev
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    command: sh -c "/scripts/manage.sh && python3 -m debugpy --listen 0.0.0.0:5678 /app/manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - backend/.env
+    volumes:
+      - ./backend:/app:rw
+      - static:/app/static:rw
+      - media:/app/media:rw
+    depends_on:
+      - redis
+      - db
+    restart: on-failure
+  beat:
+    image: {{ cookiecutter.slug }}-backend:dev
+    command: celery --app=config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+  worker:
+    image: {{ cookiecutter.slug }}-backend:dev
+    command: sh -c "python3 -m debugpy --listen 0.0.0.0:6789 /usr/local/bin/celery --app=config worker -l info -E"
+    environment:
+      DEBUG: "true"
+      C_FORCE_ROOT: "1" # run celery tasks as root
+    ports:
+      - "6789:6789"
+    volumes:
+      - ./backend:/app:rw
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+  dashboard:
+    image: {{ cookiecutter.slug }}-backend:dev
+    command: celery --app=config flower --port=5555 --debug
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+    depends_on:
+      - redis
+      - db
+  mkdocs:
+    build:
+      context: .
+      dockerfile: ./docs/Dockerfile
+    image: mkdocs-material
+    ports:
+      - "8010:8000"
+    volumes:
+      - .:/docs
+    stdin_open: true
+    tty: true
+volumes:
+  redis-data:
+  postgres_data:
+  static:
+  media:
