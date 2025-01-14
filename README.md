@@ -21,7 +21,7 @@ pip install -U cookiecutter
 Then, to create the project, run:
 
 ```bash
-cookiecutter https://github.com/codewithemad/awesome-django-cookiecutter.git
+cookiecutter https://github.com/CodeWithEmad/awesome-django-cookiecuter
 ```
 
 It will prompt you to answer some questions to customize the project.
