@@ -22,7 +22,7 @@ down.dev: ## Stop the development environment
 build.dev: ## Build the development images
 	$(DEV_COMPOSE_COMMAND) build
 
-superuser.dev: ## Creates a Suepruser for your django app in development
+superuser.dev: ## Creates a superuser for your django app in development
 	$(DEV_COMPOSE_COMMAND) exec -it api ./manage.py createsuperuser
 
 doc: ## Starts development server for documentation
@@ -53,7 +53,7 @@ up.prod: ## Start the production environment
 build.prod: ## Build the production images
 	$(COMPOSE_COMMAND) build
 
-superuser.prod: ## Creates a Suepruser for your django app in production
+superuser.prod: ## Creates a superuser for your django app in production
 	$(COMPOSE_COMMAND) exec -it api ./manage.py createsuperuser
 
 logs.prod: ## View logs for a specific service in production (usage: make logs.prod <service_name>)
@@ -89,11 +89,11 @@ upgrade-requirements: ## Upgrade requirements files
 	pip-compile --upgrade backend/requirements/docs.in
 	pip-compile --upgrade backend/requirements/production.in
 
-requirements.dev:  ## Install development requrements
+requirements.dev:  ## Install development requirements
 	pip install -qr backend/requirements/dev.txt
 	pip install -qr backend/requirements/docs.txt
 
-requirements.prod:  ## Install production requrements
+requirements.prod:  ## Install production requirements
 	pip install -qr backend/requirements/production.txt
 
 format: ## Format code automatically
